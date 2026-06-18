@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -293,8 +294,12 @@
       const grundpreisGesamt = grundpreisNebensaison + grundpreisHauptsaison;
 
       // Diese Positionen sind je Nacht gleich und müssen daher nicht nach Saison segmentiert werden.
+      // Die ersten 2 Personen sind immer im Basispreis enthalten,
+      // unabhängig davon, ob es Erwachsene oder Kinder sind.
+      const freieBasisPlaetze = Math.max(0, 2 - ueber15);
+
       const zusatzUeber15 = Math.max(ueber15 - 2, 0) * 28 * naechte;
-      const kostenUnter15 = unter15 * 11 * naechte;
+      const kostenUnter15 = Math.max(0, unter15 - freieBasisPlaetze) * 11 * naechte;
       const abgabe = ueber15 * 2.80 * naechte;
 
       let endreinigung = 0;
