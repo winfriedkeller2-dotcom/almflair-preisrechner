@@ -1,369 +1,153 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Preisrechner Karneralm</title>
-  <style>
-    :root{
-      --line:#ddd3c4;
-      --text:#2f2a24;
-      --muted:#6f675d;
-      --accent:#66754c;
-      --accent-dark:#55623f;
-      --warn:#8d3f2d;
-      --bg:#f5f1e8;
-      --card:#fffdf9;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      color:var(--text);
-      background:linear-gradient(rgba(245,241,232,.95), rgba(245,241,232,.95)), radial-gradient(circle at top left, #e8e0d1 0%, #f5f1e8 50%);
-      min-height:100vh;
-      padding:32px 16px;
-    }
-    .wrap{max-width:920px; margin:0 auto;}
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow:0 10px 28px rgba(0,0,0,.08);
-      overflow:hidden;
-    }
-    .hero{
-      padding:28px 28px 20px;
-      background:linear-gradient(135deg, #fbf8f2 0%, #f1eadf 100%);
-      border-bottom:1px solid var(--line);
-    }
-    h1{margin:0 0 8px; font-size:32px; line-height:1.15;}
-    .sub{margin:0; color:var(--muted); line-height:1.5;}
-    .body{padding:28px;}
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:18px;
-    }
-    .field label{
-      display:block;
-      font-weight:700;
-      margin-bottom:8px;
-      font-size:15px;
-    }
-    .field input, .field select{
-      width:100%;
-      padding:13px 14px;
-      border:1px solid #cfc4b4;
-      border-radius:12px;
-      font-size:16px;
-      background:#fff;
-      color:var(--text);
-    }
-    .field small{
-      display:block;
-      margin-top:6px;
-      color:var(--muted);
-      line-height:1.4;
-    }
-    .actions{
-      margin-top:22px;
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    button{
-      appearance:none;
-      border:0;
-      border-radius:12px;
-      padding:14px 18px;
-      cursor:pointer;
-      font-size:16px;
-      font-weight:700;
-    }
-    .primary{background:var(--accent); color:#fff;}
-    .primary:hover{background:var(--accent-dark);}
-    .secondary{background:#ece4d8; color:var(--text);}
-    .result{
-      margin-top:26px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-      padding:22px;
-      display:none;
-    }
-    .season-box{
-      background:#f8f4ec;
-      border:1px solid #e6dccd;
-      border-radius:12px;
-      padding:12px 14px;
-      margin-bottom:18px;
-      color:#544c43;
-      line-height:1.45;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:6px;
-    }
-    td{
-      padding:11px 0;
-      border-bottom:1px solid #eee6d9;
-      vertical-align:top;
-    }
-    td:last-child{
-      text-align:right;
-      white-space:nowrap;
-      padding-left:14px;
-    }
-    .total-row td{
-      padding-top:16px;
-      border-bottom:0;
-      font-size:22px;
-      font-weight:700;
-    }
-    .warning{
-      margin-top:16px;
-      color:var(--warn);
-      font-weight:700;
-      line-height:1.45;
-    }
-    .foot{
-      margin-top:16px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-    }
-    .rules{
-      margin-top:24px;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.55;
-    }
-    .rules strong{color:var(--text);}
-    @media (max-width:760px){
-      h1{font-size:28px}
-      .hero,.body{padding:20px}
-      .grid{grid-template-columns:1fr}
-      .total-row td{font-size:20px}
-    }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preisrechner Karneralm</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f1e8;color:#2f2a24;padding:24px}
+.wrap{max-width:900px;margin:auto;background:#fffdf9;border:1px solid #ddd3c4;border-radius:16px;padding:24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field label{display:block;font-weight:700;margin-bottom:6px}
+input,select{width:100%;padding:10px;border:1px solid #cfc4b4;border-radius:10px;font-size:16px}
+button{margin-top:18px;padding:12px 16px;border:0;border-radius:10px;font-weight:700;cursor:pointer}
+.primary{background:#66754c;color:white}.secondary{background:#ece4d8}
+#result{display:none;margin-top:22px;border:1px solid #ddd3c4;border-radius:12px;padding:18px;background:white}
+table{width:100%;border-collapse:collapse}td{padding:9px 0;border-bottom:1px solid #eee6d9}td:last-child{text-align:right}
+.total td{font-weight:700;font-size:20px;border-bottom:0}.rules{margin-top:22px;color:#6f675d;line-height:1.5}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="hero">
-        <h1>Preisrechner Karneralm</h1>
-        <p class="sub">Unverbindliche Preisberechnung für euren Aufenthalt auf unserer Almhütte. Hauptsaison gilt ausschließlich für Nächte vom <strong>20.12. bis 15.01.</strong></p>
-      </div>
+<div class="wrap">
+<h1>Preisrechner Karneralm</h1>
+<p>Unverbindliche Preisberechnung für euren Aufenthalt auf unserer Almhütte. Hauptsaison: 20.12. bis 15.01.</p>
 
-      <div class="body">
-        <div class="grid">
-          <div class="field">
-            <label for="anreise">Anreise</label>
-            <input id="anreise" type="date" />
-          </div>
+<div class="grid">
+<div class="field"><label>Anreise</label><input id="anreise" type="date"></div>
+<div class="field"><label>Abreise</label><input id="abreise" type="date"></div>
+<div class="field"><label>Personen ab 15 Jahren</label><input id="ue15" type="number" min="1" max="11" value="2"></div>
+<div class="field"><label>Personen unter 15 Jahren</label><input id="u15" type="number" min="0" max="11" value="0"></div>
+<div class="field"><label>Wäscheservice</label><select id="waesche"><option value="0">Nein</option><option value="1" id="waescheJa">Ja</option></select></div>
+<div class="field"><label>Buchungsdatum</label><input id="buchungsdatum" type="date"></div>
+</div>
 
-          <div class="field">
-            <label for="abreise">Abreise</label>
-            <input id="abreise" type="date" />
-          </div>
+<button class="primary" onclick="berechnen()">Gesamtpreis berechnen</button>
+<button class="secondary" onclick="resetForm()">Zurücksetzen</button>
 
-          <div class="field">
-            <label for="ueber15">Anzahl Personen über 15 Jahren</label>
-            <input id="ueber15" type="number" min="1" max="11" value="2" />
-            <small>Für diese Personen wird auch die Nächtigungs- und Mobilitätsabgabe berechnet.</small>
-          </div>
+<div id="result"><div id="saison"></div><table><tbody id="rows"></tbody></table><div id="warn"></div></div>
+<div class="rules" id="regeln"></div>
+</div>
 
-          <div class="field">
-            <label for="unter15">Anzahl Personen unter 15 Jahre (bei Buchungsbeginn)</label>
-            <input id="unter15" type="number" min="0" max="11" value="0" />
-          </div>
+<script>
+const CONFIG={
+  preise:{ns:119,hs:167,zAb15:28,zU15:11,waesche:20},
+  reinigung:[{bis:4,preis:80},{bis:6,preis:100},{bis:99,preis:120}],
+  abgaben:{
+    naechtigung:2.30,
+    mobilitaet:[
+      {ab:"1900-01-01",preis:0.50},
+      {ab:"2027-05-01",preis:1.10}
+    ]
+  },
+  belegung:{inklusive:2,maxRegulaer:8,maxAnfrage:11},
+  saison:{start:{m:12,t:20},ende:{m:1,t:15}}
+};
 
-          <div class="field">
-            <label for="waesche">Wäscheservice</label>
-            <select id="waesche">
-              <option value="0">Nein</option>
-              <option value="1">Ja, 20 € pro Person</option>
-            </select>
-          </div>
-        </div>
+const euro=v=>v.toLocaleString("de-AT",{style:"currency",currency:"EUR"});
+const parseDate=s=>{const p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2],12)};
+const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 
-        <div class="actions">
-          <button class="primary" onclick="berechnePreis()">Gesamtpreis berechnen</button>
-          <button class="secondary" onclick="felderZuruecksetzen()">Zurücksetzen</button>
-        </div>
+function isHS(d){
+  const m=d.getMonth()+1,t=d.getDate(),s=CONFIG.saison.start,e=CONFIG.saison.ende;
+  return (m===s.m&&t>=s.t)||(m===e.m&&t<=e.t);
+}
+function mob(d){
+  let p=0,k=key(d);
+  for(const st of CONFIG.abgaben.mobilitaet) if(k>=st.ab) p=st.preis;
+  return p;
+}
+function reinigung(n){
+  for(const st of CONFIG.reinigung) if(n<=st.bis) return st.preis;
+  return 0;
+}
 
-        <div id="result" class="result">
-          <div id="seasonInfo" class="season-box"></div>
-          <table>
-            <tbody id="resultTable"></tbody>
-          </table>
-          <div id="warning" class="warning"></div>
-          <div class="foot">
-            Alle Angaben unverbindlich. Maßgeblich ist das individuelle Angebot und die schriftliche Buchungsbestätigung.
-          </div>
-        </div>
+function verschiebeWochenende(d){
+  const x=new Date(d);
+  const tag=x.getDay();
+  if(tag===6) x.setDate(x.getDate()+2);
+  if(tag===0) x.setDate(x.getDate()+1);
+  return x;
+}
+function fmtDate(d){
+  return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear();
+}
 
-        <div class="rules">
-          <strong>Preisgrundlage:</strong><br>
-          Nebensaison: 119 € / Nacht für 2 Personen<br>
-          Hauptsaison: 167 € / Nacht für 2 Personen<br>
-          Zusatzperson über 15 Jahren: 28 € / Nacht<br>
-          Person unter 15 Jahre: 11 € / Nacht<br>
-          Nächtigungs- und Mobilitätsabgabe: 2,80 € / Person über 15 / Nacht<br>
-          Endreinigung: bis 4 Personen 80 €, bis 6 Personen 100 €, ab 7 Personen 120 €
-        </div>
-      </div>
-    </div>
-  </div>
+function berechnen(){
+  const aV=anreise.value,bV=abreise.value,buchV=buchungsdatum.value,ab15=+ue15.value,u15n=+u15.value,w=+waesche.value;
+  if(!aV||!bV){alert("Bitte Anreise und Abreise eingeben.");return}
+  const a=parseDate(aV),b=parseDate(bV),naechte=Math.round((b-a)/86400000);
+  if(naechte<1){alert("Abreise muss nach Anreise liegen.");return}
+  const personen=ab15+u15n;
+  if(personen>CONFIG.belegung.maxAnfrage){alert("Maximal 11 Personen.");return}
 
-  <script>
-    function euro(value){
-      return value.toLocaleString('de-AT', {style:'currency', currency:'EUR'});
-    }
+  let nsN=0,hsN=0,ns=0,hs=0,mobK=0;
+  for(let i=0;i<naechte;i++){
+    const d=new Date(a);d.setDate(a.getDate()+i);
+    if(isHS(d)){hsN++;hs+=CONFIG.preise.hs}else{nsN++;ns+=CONFIG.preise.ns}
+    mobK+=ab15*mob(d);
+  }
 
-    function parseLocalDate(value){
-      const parts = value.split('-');
-      return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), 12, 0, 0);
-    }
+  const freie=Math.max(0,CONFIG.belegung.inklusive-ab15);
+  const zAb15=Math.max(ab15-CONFIG.belegung.inklusive,0)*CONFIG.preise.zAb15*naechte;
+  const zU15=Math.max(0,u15n-freie)*CONFIG.preise.zU15*naechte;
+  const na=ab15*CONFIG.abgaben.naechtigung*naechte;
+  const er=reinigung(personen);
+  const wk=w?personen*CONFIG.preise.waesche:0;
+  const ges=ns+hs+zAb15+zU15+na+mobK+er+wk;
 
-    function nightsBetween(start, end){
-      const msDay = 24 * 60 * 60 * 1000;
-      return Math.round((end.getTime() - start.getTime()) / msDay);
-    }
+  saison.textContent=hsN&&nsN?`Nebensaison: ${nsN} Übernachtungen, Hauptsaison: ${hsN} Übernachtungen.`:
+    hsN===naechte?"Gesamter Aufenthalt: Hauptsaison.":"Gesamter Aufenthalt: Nebensaison.";
 
-    function isHauptsaison(nachtDatum){
-      const month = nachtDatum.getMonth() + 1;
-      const day = nachtDatum.getDate();
-      return (month === 12 && day >= 20) || (month === 1 && day <= 15);
-    }
+  let anzahlungDatum="", restDatum="";
+  if(buchV){
+    const bd=parseDate(buchV);
+    const az=new Date(bd); az.setDate(az.getDate()+7);
+    anzahlungDatum=fmtDate(verschiebeWochenende(az));
+    const rz=new Date(a); rz.setDate(rz.getDate()-28);
+    restDatum=fmtDate(verschiebeWochenende(rz));
+  }
 
-    function saisonAufteilen(anreise, naechte){
-      let hs = 0;
-      let ns = 0;
-      for(let i = 0; i < naechte; i++){
-        const d = new Date(anreise);
-        d.setDate(anreise.getDate() + i);
-        if(isHauptsaison(d)){
-          hs++;
-        } else {
-          ns++;
-        }
-      }
-      return { hauptsaisonNaechte: hs, nebensaisonNaechte: ns };
-    }
-
-    function berechnePreis(){
-      const anreiseVal = document.getElementById('anreise').value;
-      const abreiseVal = document.getElementById('abreise').value;
-      const ueber15 = parseInt(document.getElementById('ueber15').value || '0', 10);
-      const unter15 = parseInt(document.getElementById('unter15').value || '0', 10);
-      const waesche = parseInt(document.getElementById('waesche').value || '0', 10);
-
-      if(!anreiseVal || !abreiseVal){
-        alert('Bitte Anreise und Abreise eingeben.');
-        return;
-      }
-      if(ueber15 < 1){
-        alert('Bitte mindestens 1 Person über 15 Jahren eingeben.');
-        return;
-      }
-
-      const anreise = parseLocalDate(anreiseVal);
-      const abreise = parseLocalDate(abreiseVal);
-      const naechte = nightsBetween(anreise, abreise);
-
-      if(naechte < 1){
-        alert('Das Abreisedatum muss nach dem Anreisedatum liegen.');
-        return;
-      }
-
-      const gesamtPersonen = ueber15 + unter15;
-      if(gesamtPersonen > 11){
-        alert('Die maximale Belegung liegt bei 11 Personen.');
-        return;
-      }
-
-      const saison = saisonAufteilen(anreise, naechte);
-
-      // Segmentiert wird nur der Basispreis der Hütte.
-      const grundpreisNebensaison = saison.nebensaisonNaechte * 119;
-      const grundpreisHauptsaison = saison.hauptsaisonNaechte * 167;
-      const grundpreisGesamt = grundpreisNebensaison + grundpreisHauptsaison;
-
-      // Diese Positionen sind je Nacht gleich und müssen daher nicht nach Saison segmentiert werden.
-      // Die ersten 2 Personen sind immer im Basispreis enthalten,
-      // unabhängig davon, ob es Erwachsene oder Kinder sind.
-      const freieBasisPlaetze = Math.max(0, 2 - ueber15);
-
-      const zusatzUeber15 = Math.max(ueber15 - 2, 0) * 28 * naechte;
-      const kostenUnter15 = Math.max(0, unter15 - freieBasisPlaetze) * 11 * naechte;
-      const abgabe = ueber15 * 2.80 * naechte;
-
-      let endreinigung = 0;
-      if(gesamtPersonen <= 4){
-        endreinigung = 80;
-      } else if(gesamtPersonen <= 6){
-        endreinigung = 100;
-      } else {
-        endreinigung = 120;
-      }
-
-      const waescheKosten = waesche ? gesamtPersonen * 20 : 0;
-      const gesamt = grundpreisGesamt + zusatzUeber15 + kostenUnter15 + abgabe + endreinigung + waescheKosten;
-
-      let saisonText = '';
-      if(saison.hauptsaisonNaechte > 0 && saison.nebensaisonNaechte > 0){
-        saisonText = 'Segmentierung der Übernachtungspreise: ' + saison.nebensaisonNaechte + ' Nacht/Nächte Nebensaison und ' + saison.hauptsaisonNaechte + ' Nacht/Nächte Hauptsaison.';
-      } else if(saison.hauptsaisonNaechte === naechte){
-        saisonText = 'Der gesamte Aufenthalt liegt in der Hauptsaison.';
-      } else {
-        saisonText = 'Der gesamte Aufenthalt liegt in der Nebensaison.';
-      }
-
-      const rows = [
-        ['Anzahl Nächte gesamt', String(naechte)],
-        ['davon Nächte Nebensaison', String(saison.nebensaisonNaechte)],
-        ['davon Nächte Hauptsaison', String(saison.hauptsaisonNaechte)],
-        ['Grundpreis Nebensaison', euro(grundpreisNebensaison)],
-        ['Grundpreis Hauptsaison', euro(grundpreisHauptsaison)],
-        ['Zusatzpersonen über 15 Jahren', euro(zusatzUeber15)],
-        ['Personen unter 15 Jahre', euro(kostenUnter15)],
-        ['Nächtigungs- und Mobilitätsabgabe', euro(abgabe)],
-        ['Endreinigung', euro(endreinigung)],
-        ['Wäscheservice', euro(waescheKosten)]
-      ];
-
-      let html = '';
-      for(const row of rows){
-        html += '<tr><td>' + row[0] + '</td><td>' + row[1] + '</td></tr>';
-      }
-      html += '<tr class="total-row"><td>Gesamtpreis</td><td>' + euro(gesamt) + '</td></tr>';
-
-      let warnung = '';
-      if(gesamtPersonen > 8){
-        warnung = 'Hinweis: Ab 9 Personen ist die Belegung nur auf Anfrage möglich.';
-      }
-
-      document.getElementById('seasonInfo').textContent = saisonText;
-      document.getElementById('resultTable').innerHTML = html;
-      document.getElementById('warning').textContent = warnung;
-      document.getElementById('result').style.display = 'block';
-    }
-
-    function felderZuruecksetzen(){
-      document.getElementById('anreise').value = '';
-      document.getElementById('abreise').value = '';
-      document.getElementById('ueber15').value = '2';
-      document.getElementById('unter15').value = '0';
-      document.getElementById('waesche').value = '0';
-      document.getElementById('result').style.display = 'none';
-      document.getElementById('seasonInfo').textContent = '';
-      document.getElementById('resultTable').innerHTML = '';
-      document.getElementById('warning').textContent = '';
-    }
-  </script>
+  const data=[
+    ["Anzahl Übernachtungen",naechte],
+    ["Basispreis Nebensaison",euro(ns)],
+    ["Basispreis Hauptsaison",euro(hs)],
+    ["Zusatzpersonen ab 15 Jahren",euro(zAb15)],
+    ["Personen unter 15 Jahren",euro(zU15)],
+    ["Allgemeine Nächtigungsabgabe",euro(na)],
+    ["Mobilitätsabgabe",euro(mobK)],
+    ["Endreinigung",euro(er)],
+    ["Wäscheservice",euro(wk)],
+    ...(buchV ? [["Fälligkeit Anzahlung",anzahlungDatum],["Fälligkeit Restzahlung",restDatum]] : [])
+  ];
+  rows.innerHTML=data.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")+
+    `<tr class="total"><td>Gesamtpreis</td><td>${euro(ges)}</td></tr>`;
+  warn.textContent=personen>CONFIG.belegung.maxRegulaer?"Hinweis: Ab 9 Personen nur auf Anfrage.":"";
+  result.style.display="block";
+}
+function resetForm(){
+  anreise.value="";abreise.value="";buchungsdatum.value="";ue15.value=2;u15.value=0;waesche.value=0;result.style.display="none";
+}
+function regelnSetzen(){
+  waescheJa.textContent=`Ja, ${euro(CONFIG.preise.waesche)} pro Person`;
+  regeln.innerHTML=`<strong>Preisgrundlage:</strong><br>
+  Nebensaison: ${euro(CONFIG.preise.ns)} / Nacht für 2 Personen<br>
+  Hauptsaison: ${euro(CONFIG.preise.hs)} / Nacht für 2 Personen<br>
+  Zusatzperson ab 15 Jahren: ${euro(CONFIG.preise.zAb15)} / Nacht<br>
+  Person unter 15 Jahren: ${euro(CONFIG.preise.zU15)} / Nacht<br>
+  Nächtigungsabgabe: ${euro(CONFIG.abgaben.naechtigung)} / Person ab 15 / Nacht<br>
+  Mobilitätsabgabe: ${euro(CONFIG.abgaben.mobilitaet[0].preis)}; ab 01.05.2027 ${euro(CONFIG.abgaben.mobilitaet[1].preis)} / Person ab 15 / Nacht<br>
+  Endreinigung: bis 4 Personen ${euro(CONFIG.reinigung[0].preis)}, bis 6 Personen ${euro(CONFIG.reinigung[1].preis)}, ab 7 Personen ${euro(CONFIG.reinigung[2].preis)}`;
+}
+regelnSetzen();
+</script>
 </body>
 </html>
