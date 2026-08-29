@@ -27,7 +27,6 @@ table{width:100%;border-collapse:collapse}td{padding:9px 0;border-bottom:1px sol
 <div class="field"><label>Personen ab 15 Jahren</label><input id="ue15" type="number" min="1" max="11" value="2"></div>
 <div class="field"><label>Personen unter 15 Jahren</label><input id="u15" type="number" min="0" max="11" value="0"></div>
 <div class="field"><label>Wäscheservice</label><select id="waesche"><option value="0">Nein</option><option value="1" id="waescheJa">Ja</option></select></div>
-<div class="field"><label>Buchungsdatum</label><input id="buchungsdatum" type="date"></div>
 </div>
 
 <button class="primary" onclick="berechnen()">Gesamtpreis berechnen</button>
@@ -70,19 +69,8 @@ function reinigung(n){
   return 0;
 }
 
-function verschiebeWochenende(d){
-  const x=new Date(d);
-  const tag=x.getDay();
-  if(tag===6) x.setDate(x.getDate()+2);
-  if(tag===0) x.setDate(x.getDate()+1);
-  return x;
-}
-function fmtDate(d){
-  return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear();
-}
-
 function berechnen(){
-  const aV=anreise.value,bV=abreise.value,buchV=buchungsdatum.value,ab15=+ue15.value,u15n=+u15.value,w=+waesche.value;
+  const aV=anreise.value,bV=abreise.value,ab15=+ue15.value,u15n=+u15.value,w=+waesche.value;
   if(!aV||!bV){alert("Bitte Anreise und Abreise eingeben.");return}
   const a=parseDate(aV),b=parseDate(bV),naechte=Math.round((b-a)/86400000);
   if(naechte<1){alert("Abreise muss nach Anreise liegen.");return}
@@ -107,15 +95,6 @@ function berechnen(){
   saison.textContent=hsN&&nsN?`Nebensaison: ${nsN} Übernachtungen, Hauptsaison: ${hsN} Übernachtungen.`:
     hsN===naechte?"Gesamter Aufenthalt: Hauptsaison.":"Gesamter Aufenthalt: Nebensaison.";
 
-  let anzahlungDatum="", restDatum="";
-  if(buchV){
-    const bd=parseDate(buchV);
-    const az=new Date(bd); az.setDate(az.getDate()+7);
-    anzahlungDatum=fmtDate(verschiebeWochenende(az));
-    const rz=new Date(a); rz.setDate(rz.getDate()-28);
-    restDatum=fmtDate(verschiebeWochenende(rz));
-  }
-
   const data=[
     ["Anzahl Übernachtungen",naechte],
     ["Basispreis Nebensaison",euro(ns)],
@@ -125,8 +104,7 @@ function berechnen(){
     ["Allgemeine Nächtigungsabgabe",euro(na)],
     ["Mobilitätsabgabe",euro(mobK)],
     ["Endreinigung",euro(er)],
-    ["Wäscheservice",euro(wk)],
-    ...(buchV ? [["Fälligkeit Anzahlung",anzahlungDatum],["Fälligkeit Restzahlung",restDatum]] : [])
+    ["Wäscheservice",euro(wk)]
   ];
   rows.innerHTML=data.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")+
     `<tr class="total"><td>Gesamtpreis</td><td>${euro(ges)}</td></tr>`;
@@ -134,7 +112,7 @@ function berechnen(){
   result.style.display="block";
 }
 function resetForm(){
-  anreise.value="";abreise.value="";buchungsdatum.value="";ue15.value=2;u15.value=0;waesche.value=0;result.style.display="none";
+  anreise.value="";abreise.value="";ue15.value=2;u15.value=0;waesche.value=0;result.style.display="none";
 }
 function regelnSetzen(){
   waescheJa.textContent=`Ja, ${euro(CONFIG.preise.waesche)} pro Person`;
