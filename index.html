@@ -145,7 +145,7 @@ function regelnSetzen(){
   Person unter 15 Jahren: ${euro(CONFIG.preise.zU15)} / Nacht<br>
   Nächtigungsabgabe: ${euro(CONFIG.abgaben.naechtigung)} / Person ab 15 / Nacht<br>
   Mobilitätsabgabe: ${euro(CONFIG.abgaben.mobilitaet[0].preis)}; ab 01.05.2027 ${euro(CONFIG.abgaben.mobilitaet[1].preis)} / Person ab 15 / Nacht<br>
-  Endreinigung: bis 4 Personen ${euro(CONFIG.reinigung[0].preis)}, bis 6 Personen ${euro(CONFIG.reinigung[1].preis)}, ab 7 Personen ${euro(CONFIG.reinigung[2].preis)}`;
+  Endreinigung: ${euro(CONFIG.reinigung[0].preis)} pauschal`;
 }
 regelnSetzen();
 </script>
